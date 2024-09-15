@@ -16,6 +16,66 @@
   Once you've implemented the logic, test your code by running
 */
 
-class Calculator {}
+class Calculator {
+  constructor() {
+    this.result = 0;
+  }
+
+  checkIsValidNum(num) {
+    if (typeof num !== 'number' || isNaN(num)) {
+      throw new Error('Invalid number');
+    }
+  }
+
+  add(num) {
+    this.checkIsValidNum(num);
+    this.result += num;
+  }
+
+  subtract(num) {
+    this.checkIsValidNum(num);
+    this.result -= num;
+  }
+
+  multiply(num) {
+    this.checkIsValidNum(num);
+    this.result *= num;
+  }
+
+  divide(num) {
+    this.checkIsValidNum(num);
+    if (num === 0) {
+      throw new Error('Cannot divide by zero');
+    }
+    this.result /= num;
+  }
+
+  clear() {
+    this.result = 0;
+  }
+
+  getResult() {
+    return this.result;
+  }
+
+  calculate(expr) {
+    expr = expr.replace(/\s+/g, '');
+
+    if (/[^0-9+\-*/().]/.test(expr)) {
+      throw new Error('Invalid characters in expression');
+    }
+
+    const divisionByZeroPattern = /\/\s*0(?!\d)/;
+    if (divisionByZeroPattern.test(expr)) {
+      throw new Error('Division by zero detected');
+    }
+
+    try {
+      this.result = new Function('return ' + expr)();
+    } catch (error) {
+      throw new Error('Error in evaluating expression');
+    }
+  }
+}
 
 module.exports = Calculator;
