@@ -4,21 +4,61 @@
  * Return a promise chain which return the time in milliseconds it takes to complete the entire operation.
  * Compare it with the results from 3-promise-all.js
  */
-
 function wait1(t) {
-
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve("Wait 1 completed");
+        }, t * 1000);
+    });
 }
 
 function wait2(t) {
-
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve("Wait 2 completed");
+        }, t * 1000);
+    });
 }
 
 function wait3(t) {
-
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve("Wait 3 completed");
+        }, t * 1000);
+    });
 }
 
-function calculateTime(t1, t2, t3) {
+async function calculateTime(t1, t2, t3) {
+    const start = Date.now();
+    const r1 = await wait1(t1);
+    const r2 = await wait1(t2);
+    const r3 = await wait1(t3);
+    const end = Date.now();
 
+    return end - start;
 }
+
+// function calculateTime(t1, t2, t3) {
+//     const start = Date.now();
+
+//     return wait1(t1).then((result1) => {
+//         console.log(result1); // Log first result
+//         return wait2(t2); // Wait for second promise
+//     }).then((result2) => {
+//         console.log(result2); // Log second result
+//         return wait3(t3); // Wait for third promise
+//     }).then((result3) => {
+//         console.log(result3); // Log third result
+//         const end = Date.now(); // Correctly call Date.now()
+//         const time = end - start; // Calculate total time taken
+//         return time; // Return the total time taken
+//     });
+// }
+
+// Example usage
+// calculateTime(1, 2, 3).then((time) => {
+//     console.log(`Total time taken: ${time} milliseconds`);
+// });
+
 
 module.exports = calculateTime;
