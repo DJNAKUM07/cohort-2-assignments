@@ -31,8 +31,24 @@ function wait3(t) {
 async function calculateTime(t1, t2, t3) {
     const start = Date.now();
     const r1 = await wait1(t1);
-    const r2 = await wait1(t2);
-    const r3 = await wait1(t3);
+    const r2 = await wait2(t2);
+    const r3 = await wait3(t3);
+    const end = Date.now();
+
+    return end - start;
+}
+
+function calculateTimeWithOutAwait(t1, t2, t3) {
+    const start = Date.now();
+    const r1 = wait1(t1);
+    const r2 = wait2(t2);
+    const r3 = wait3(t3);
+
+    r1.then((resolve) => console.log(resolve));
+    r2.then((resolve) => console.log(resolve));
+    r3.then((resolve) => console.log(resolve));
+
+    console.log(r1, r2, r3)
     const end = Date.now();
 
     return end - start;
@@ -56,6 +72,9 @@ async function calculateTime(t1, t2, t3) {
 // }
 
 // Example usage
+
+// console.log(calculateTimeWithOutAwait(1, 2, 3));
+
 // calculateTime(1, 2, 3).then((time) => {
 //     console.log(`Total time taken: ${time} milliseconds`);
 // });
