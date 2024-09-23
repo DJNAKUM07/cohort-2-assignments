@@ -1,1 +1,27 @@
-[]
+[
+    {
+        "id": 1,
+        "title": "Buy groceries",
+        "description": "I should buy groceries for the week."
+    },
+    {
+        "id": 2,
+        "title": "Walk the dog",
+        "description": "Take the dog for a walk in the park."
+    },
+    {
+        "id": 3,
+        "title": "Finish the project report",
+        "description": "Complete the final report for the project by Friday."
+    },
+    {
+        "id": 4,
+        "title": "Call the bank",
+        "description": "Call the bank to inquire about the account balance."
+    },
+    {
+        "id": 5,
+        "title": "Schedule a dentist appointment",
+        "description": "Make an appointment for a dental check-up."
+    }
+]

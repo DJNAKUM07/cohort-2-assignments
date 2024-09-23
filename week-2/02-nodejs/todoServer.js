@@ -39,11 +39,110 @@
 
   Testing the server - run `npm run test-todoServer` command in terminal
  */
-  const express = require('express');
-  const bodyParser = require('body-parser');
-  
-  const app = express();
-  
-  app.use(bodyParser.json());
-  
-  module.exports = app;
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const { todo } = require('node:test');
+const fs = require('fs').promises;
+
+const app = express();
+const port = 3000;
+const filePath = 'todos.json';
+let todoData = [];
+
+app.use(bodyParser.json());
+
+// Function to load data from the file
+const loadDataFromFile = async () => {
+  try {
+    const data = await fs.readFile(filePath, "utf-8");
+    todoData = JSON.parse(data) || []; // Parse the JSON data
+  } catch (err) {
+    console.error('Error reading the file:', err);
+  }
+};
+
+// Function to update data in the file
+const updateDataInFile = async () => {
+  try {
+    await fs.writeFile(filePath, JSON.stringify(todoData, null, 2), 'utf-8');
+  } catch (error) {
+    console.error(`Error in updating data: ${error}`);
+  }
+}
+
+// Start the server and load data
+const startServer = async () => {
+  await loadDataFromFile(); // Ensure data is loaded before starting the server
+
+  // 1. GET /todos - Retrieve all todo items
+  app.get('/todos', (req, res) => {
+    res.status(200).json(todoData); // Send the todo data as a response
+  });
+
+  // 2. GET /todos/:id - Retrieve a specific todo item by ID
+  app.get('/todos/:id', (req, res) => {
+    const { id } = req.params;
+    const todoItem = todoData.find(todo => todo.id == id);
+
+    if (todoItem) {
+      res.status(200).json(todoItem);
+    } else {
+      res.status(404).json({ message: "Todo not found" });
+    }
+  });
+
+  // 3. POST /todos - Create a new todo item
+  app.post('/todos', async (req, res) => {
+    const { title, description } = req.body;
+    const newID = todoData.length > 0 ? todoData[todoData.length - 1].id + 1 : 1;
+    const newTodo = { id: newID, title, description };
+
+    todoData.push(newTodo); // Add the new todo to the array
+    // await updateDataInFile(); // Save to file
+    res.status(201).json({ id: newID });
+  });
+
+  // 4. PUT /todos/:id - Update an existing todo item by ID
+  app.put('/todos/:id', async (req, res) => {
+    const { id } = req.params;
+    const { title, description } = req.body;
+    let idxOfTodoToUpdate = todoData.findIndex(todo => todo.id == id);
+
+    if (idxOfTodoToUpdate > -1) {
+      todoData[idxOfTodoToUpdate] = { id: parseInt(id), title, description }; // Update the todo item
+      // await updateDataInFile(); // Save to file
+      res.status(200).json({ id: id });
+    } else {
+      res.status(404).json({ message: "Todo not found" });
+    }
+  });
+
+  // 5. DELETE /todos/:id - Delete a todo item by ID
+  app.delete('/todos/:id', async (req, res) => {
+    const { id } = req.params;
+    let idxOfTodoToDelete = todoData.findIndex(todo => todo.id == id);
+
+    if (idxOfTodoToDelete > -1) {
+      todoData.splice(idxOfTodoToDelete, 1); // Remove the todo item
+      // await updateDataInFile(); // Save to file
+      res.status(200).json('Todo deleted');
+    } else {
+      res.status(404).json({ message: "Todo not found" });
+    }
+  });
+
+  // Catch-all for undefined routes
+  app.use((req, res) => {
+    res.status(404).json({ message: "Route not found" });
+  });
+
+  app.listen(port, () => {
+    console.log("Server running on port " + port);
+  });
+};
+
+startServer();
+
+module.exports = app;
+
